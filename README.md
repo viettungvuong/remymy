@@ -4,7 +4,7 @@ Remymy is composed of the `app`, `mcp`, and `models` services, plus a PostgreSQL
 
 ## Environment setup
 
-Use `.env.nonprod` for the non-production environment. It should contain at least:
+Use `.env.nonprod` for the non-production environment. Copy [`.env.example`](./.env.example) and fill it in: `docker-compose.yml` has no default credentials, so the stack does not start without the Langfuse values. It should contain at least:
 
 ```env
 ENV=nonprod

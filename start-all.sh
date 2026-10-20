@@ -15,7 +15,7 @@ present it also starts the models and mcp services. Opens the app in your
 browser once everything answers. Press Ctrl+C to stop and remove the
 containers; user accounts and Langfuse data are kept in Docker volumes.
 
-Reads .env.nonprod when it exists. The recommender (models + mcp) starts only
+Reads .env.nonprod, which must exist: copy .env.example and fill it in. The recommender (models + mcp) starts only
 when both of these exist under DATA_DIR (default ./data):
   raw/food-com/RAW_recipes.csv
   models/\$MODEL_FILE              (default hybrid-foodcom-bpr.npz)
@@ -104,7 +104,11 @@ if [ "$problems" -ne 0 ]; then
   exit 1
 fi
 
-[ -f "$ENV_FILE" ] || warn ".env.nonprod not found; using the defaults in docker-compose.yml."
+if [ ! -f "$ENV_FILE" ]; then
+  fail ".env.nonprod not found. It holds the Langfuse credentials docker-compose.yml needs:"
+  printf '   cp %q %q, then fill in the blanks.\n' "$ROOT/.env.example" "$ENV_FILE" >&2
+  exit 1
+fi
 
 case "$DATA_DIR" in
   /*) data_path=$DATA_DIR ;;

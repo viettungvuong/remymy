@@ -18,8 +18,8 @@ services:
       # container itself.
       DATA_API_URL: http://api:8002
       LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-http://langfuse-web:3000}
-      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-REMOVED}
-      LANGFUSE_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:-REMOVED}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:?set LANGFUSE_INIT_PROJECT_PUBLIC_KEY in .env.nonprod, see .env.example}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:?set LANGFUSE_INIT_PROJECT_SECRET_KEY in .env.nonprod, see .env.example}
     # Only the Data API: the app never calls mcp or models directly.
     depends_on:
       api:
@@ -162,32 +162,32 @@ services:
         condition: service_healthy
     environment: &langfuse-worker-env
       NEXTAUTH_URL: ${LANGFUSE_NEXTAUTH_URL:-http://localhost:${LANGFUSE_PORT:-3030}}
-      DATABASE_URL: postgresql://postgres:${LANGFUSE_POSTGRES_PASSWORD:-REMOVED}@langfuse-postgres:5432/postgres
-      SALT: ${LANGFUSE_SALT:-REMOVED}
-      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-REMOVED}
+      DATABASE_URL: postgresql://postgres:${LANGFUSE_POSTGRES_PASSWORD:?set LANGFUSE_POSTGRES_PASSWORD in .env.nonprod, see .env.example}@langfuse-postgres:5432/postgres
+      SALT: ${LANGFUSE_SALT:?set LANGFUSE_SALT in .env.nonprod, see .env.example}
+      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:?set LANGFUSE_ENCRYPTION_KEY in .env.nonprod, see .env.example}
       TELEMETRY_ENABLED: "false"
       CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
       CLICKHOUSE_URL: http://langfuse-clickhouse:8123
       CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-REMOVED}
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:?set LANGFUSE_CLICKHOUSE_PASSWORD in .env.nonprod, see .env.example}
       CLICKHOUSE_CLUSTER_ENABLED: "false"
       LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
       LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
       LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_MINIO_USER:-minio}
-      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_MINIO_PASSWORD:-REMOVED}
+      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_MINIO_PASSWORD:?set LANGFUSE_MINIO_PASSWORD in .env.nonprod, see .env.example}
       LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://langfuse-minio:9000
       LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
       LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
       LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
       LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
       LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_MINIO_USER:-minio}
-      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_MINIO_PASSWORD:-REMOVED}
+      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_MINIO_PASSWORD:?set LANGFUSE_MINIO_PASSWORD in .env.nonprod, see .env.example}
       LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://langfuse-minio:9000
       LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
       LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
       REDIS_HOST: langfuse-redis
       REDIS_PORT: 6379
-      REDIS_AUTH: ${LANGFUSE_REDIS_AUTH:-REMOVED}
+      REDIS_AUTH: ${LANGFUSE_REDIS_AUTH:?set LANGFUSE_REDIS_AUTH in .env.nonprod, see .env.example}
     networks:
       - remymy
 
@@ -197,18 +197,18 @@ services:
     depends_on: *langfuse-depends-on
     environment:
       <<: *langfuse-worker-env
-      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-REMOVED}
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:?set LANGFUSE_NEXTAUTH_SECRET in .env.nonprod, see .env.example}
       LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://127.0.0.1:${MINIO_PORT:-9090}
       LANGFUSE_S3_MEDIA_UPLOAD_INTERNAL_ENDPOINT: http://langfuse-minio:9000
       LANGFUSE_INIT_ORG_ID: remymy
       LANGFUSE_INIT_ORG_NAME: Remymy
       LANGFUSE_INIT_PROJECT_ID: remymy-pi
       LANGFUSE_INIT_PROJECT_NAME: Remymy Pi Agent
-      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-REMOVED}
-      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:-REMOVED}
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:?set LANGFUSE_INIT_PROJECT_PUBLIC_KEY in .env.nonprod, see .env.example}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:?set LANGFUSE_INIT_PROJECT_SECRET_KEY in .env.nonprod, see .env.example}
       LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-remymy@example.com}
       LANGFUSE_INIT_USER_NAME: remymy
-      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-REMOVED}
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:?set LANGFUSE_INIT_USER_PASSWORD in .env.nonprod, see .env.example}
     healthcheck:
       test: ["CMD-SHELL", "wget --spider --quiet http://$$(hostname):3000/api/public/health"]
       interval: 15s
@@ -234,7 +234,7 @@ services:
       LANGFUSE_UPSTREAM: http://langfuse-web:3000
       LANGFUSE_PUBLIC_URL: ${LANGFUSE_NEXTAUTH_URL:-http://localhost:${LANGFUSE_PORT:-3030}}
       LANGFUSE_LOCAL_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-remymy@example.com}
-      LANGFUSE_LOCAL_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-REMOVED}
+      LANGFUSE_LOCAL_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:?set LANGFUSE_INIT_USER_PASSWORD in .env.nonprod, see .env.example}
     healthcheck:
       test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3030/api/public/health"]
       interval: 10s
@@ -250,7 +250,7 @@ services:
     environment:
       CLICKHOUSE_DB: default
       CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-REMOVED}
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:?set LANGFUSE_CLICKHOUSE_PASSWORD in .env.nonprod, see .env.example}
     volumes:
       - langfuse-clickhouse-data:/var/lib/clickhouse
       - langfuse-clickhouse-logs:/var/log/clickhouse-server
@@ -272,7 +272,7 @@ services:
     command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: ${LANGFUSE_MINIO_USER:-minio}
-      MINIO_ROOT_PASSWORD: ${LANGFUSE_MINIO_PASSWORD:-REMOVED}
+      MINIO_ROOT_PASSWORD: ${LANGFUSE_MINIO_PASSWORD:?set LANGFUSE_MINIO_PASSWORD in .env.nonprod, see .env.example}
     ports:
       - "127.0.0.1:${MINIO_PORT:-9090}:9000"
     volumes:
@@ -290,11 +290,11 @@ services:
   langfuse-redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: ["redis-server", "--requirepass", "${LANGFUSE_REDIS_AUTH:-REMOVED}", "--maxmemory-policy", "noeviction"]
+    command: ["redis-server", "--requirepass", "${LANGFUSE_REDIS_AUTH:?set LANGFUSE_REDIS_AUTH in .env.nonprod, see .env.example}", "--maxmemory-policy", "noeviction"]
     volumes:
       - langfuse-redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "REMOVED", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${LANGFUSE_REDIS_AUTH:?set LANGFUSE_REDIS_AUTH in .env.nonprod, see .env.example}", "ping"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -306,7 +306,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${LANGFUSE_POSTGRES_PASSWORD:-REMOVED}
+      POSTGRES_PASSWORD: ${LANGFUSE_POSTGRES_PASSWORD:?set LANGFUSE_POSTGRES_PASSWORD in .env.nonprod, see .env.example}
       POSTGRES_DB: postgres
       TZ: UTC
       PGTZ: UTC
